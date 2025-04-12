@@ -332,3 +332,132 @@ $ riscv64-unknown-elf-objdump -d filename.o | less
 ---
 
 # Day 2
+
+# ABI Basics
+
+## What is ABI?
+
+- The **Application Binary Interface (ABI)** defines how application programs interact with the operating system and the hardware.
+- It is important for both hardware designers and software developers.
+- ABI specifies:
+  - System call conventions
+  - Register usage
+  - Calling conventions
+  - Binary file formats
+
+---
+
+## ABI vs. Architecture
+
+- ABI is like the visible layout of a building — it's the part users interact with.
+- Architecture is the internal structure — how the system is actually built (like plumbing and wiring).
+- Similarly, users are concerned with what the system does, not how it is implemented internally.
+
+---
+
+## Layered Abstraction in Software-Hardware Interaction
+
+Software communicates with hardware through a series of layers:
+
+- **API (Application Programming Interface)**: Interfaces like `stdio.h` in C or Java libraries.
+- **ABI (Application Binary Interface)**: Connects system-level software to machine instructions.
+- **ISA (Instruction Set Architecture)**: Defines the set of machine-level instructions (e.g., RISC-V, x86).
+- **RTL (Register Transfer Level)**: Describes how the ISA is implemented in hardware.
+
+---
+
+## Accessing System Resources via ABI
+
+- Programs use **system calls** defined by the ABI to access hardware resources.
+- This includes operations such as memory access, register usage, and I/O handling.
+
+---
+
+# Memory and Register Basics in RISC-V
+
+## RISC-V Register Overview
+
+- RISC-V defines **32 general-purpose registers**, each 64 bits wide in a 64-bit system (XLEN = 64).
+- These registers are used to store data, addresses, and intermediate values during computation.
+
+### Why 32 Registers?
+
+- 32 registers provide a balance between hardware complexity and performance.
+- With 5 bits, you can uniquely address all 32 registers (2⁵ = 32).
+
+---
+
+## Register and Memory Interaction
+
+### Byte-Addressable Memory
+
+- Memory in RISC-V is **byte-addressable**: each address points to a single byte.
+- A 64-bit (8-byte) value is stored across 8 consecutive memory locations.
+
+### Endianness
+
+- RISC-V systems typically use **Little Endian** format:
+  - The **least significant byte (LSB)** is stored at the **lowest memory address**.
+  - The **most significant byte (MSB)** is stored at the **highest memory address**.
+
+---
+
+## Loading and Storing Data
+
+### Loading Data from Memory
+
+- Data is loaded from memory into registers using **load instructions**.
+- Example:
+  ```assembly
+  ldw x0, 16(x23)
+  ```
+  - Loads a 64-bit value from the address `x23 + 16` into register `x0`.
+
+### Storing Data to Memory
+
+- Data is saved from registers to memory using **store instructions**.
+- Example:
+  ```assembly
+  stw x0, 8(x23)
+  ```
+  - Stores the content of `x0` into memory at address `x23 + 8`.
+
+---
+
+# RISC-V Instruction Types and Registers
+
+## Instruction Formats
+
+- **R-Type**: Uses only registers (e.g., `add x0, x1, x2`)
+- **I-Type**: Uses registers and an immediate value (e.g., `ldw x0, 16(x23)`)
+- **S-Type**: Used for store operations (e.g., `stw x0, 8(x23)`)
+
+Each format is 32 bits wide and includes:
+- Opcode
+- Source/destination registers
+- Immediate values or function codes
+
+---
+
+## Register Naming and ABI Conventions
+
+- RISC-V registers (`x0` to `x31`) have specific roles and aliases defined by the ABI:
+
+| Register | Alias | Purpose              |
+|----------|-------|----------------------|
+| x0       | zero  | Constant zero        |
+| x1       | ra    | Return address       |
+| x2       | sp    | Stack pointer        |
+| x3       | gp    | Global pointer       |
+| x4       | tp    | Thread pointer       |
+| x5–x7    | t0–t2 | Temporaries          |
+| x10–x17  | a0–a7 | Function arguments   |
+| x18–x27  | s2–s11| Saved registers      |
+| x28–x31  | t3–t6 | More temporaries     |
+
+- The ABI ensures consistent register usage across system-level software and applications.
+
+---
+
+
+
