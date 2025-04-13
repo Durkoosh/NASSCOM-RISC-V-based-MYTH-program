@@ -579,5 +579,253 @@ loop:
 ![2 2](https://github.com/user-attachments/assets/a559e09a-3347-46d2-8200-ffee06141bfa)
 ![2 3](https://github.com/user-attachments/assets/a872a8ae-ecfe-4c71-ac3f-4dfbec768c53)
 
+# Day 3 
+
+# Introduction to Logic Gates
+
+## Digital Logic Fundamentals
+
+Digital logic is the foundation of all digital systems and is based on binary values: `1` (high) and `0` (low). These binary values are manipulated using **logic gates**, the essential components of digital circuits.
+
+---
+
+## Logic Gates
+
+Logic gates perform basic Boolean functions such as AND, OR, and NOT. These gates are the fundamental building blocks used in designing digital circuits.
+
+![Logic Gates](https://github.com/user-attachments/assets/5d48018c-4dd3-4a65-889d-0a6a7d8cddef)
+
+---
+
+## Combinational Logic
+
+Combinational logic circuits produce outputs based entirely on current input values, without involving memory or state.
+
+### Example: Full Adder
+
+A **3-input full adder** calculates the sum and carry-out of binary addition.
+
+- **Inputs**: A, B, Cin (carry-in)
+- **Outputs**: S (sum), Cout (carry-out)
+
+![Full Adder Logic](https://github.com/user-attachments/assets/e9e4b6a4-2215-41da-9295-cddc36df31da)
+![Full Adder Truth Table](https://github.com/user-attachments/assets/ebfbee27-6328-45d7-a812-4633c05d55be)
+
+---
+
+## Sequential Logic
+
+Sequential circuits introduce memory into the system and operate based on a clock signal. The outputs depend not only on current inputs but also on past states.
+
+- Registers store values at the rising or falling edge of the clock signal.
+
+![Sequential Logic](https://github.com/user-attachments/assets/beaad135-9637-4e22-8c87-133ed5fa214c)
+
+---
+
+## Pipeline Logic
+
+Pipelining breaks a process into multiple stages, each handled in a separate clock cycle. This allows for parallel processing and improved system performance.
+
+- Each stage passes its result to the next stage on each clock edge.
+
+---
+
+## Hierarchical Design
+
+Complex digital systems are built by composing smaller, reusable modules. For example, a full adder can be reused as a component in an arithmetic logic unit (ALU).
+
+- This modular approach simplifies design and improves scalability.
+
+![Hierarchical Design](https://github.com/user-attachments/assets/8555eb5c-1343-452d-b4ee-093040893933)
+
+---
+
+## TL-Verilog Syntax Overview
+
+TL-Verilog supports both single-bit and multi-bit data operations. The syntax varies based on the width of the data being processed.
+
+![TL-Verilog Syntax](https://github.com/user-attachments/assets/4c3e7d89-d0fc-480e-bdbf-93ae009e3940)
+
+# Notes on Sequential Logic and D Flip-Flop
+
+## 1. Introduction to Sequential Logic
+
+Sequential logic incorporates a **clock signal** to regulate the flow of data through logic circuits. This clock ensures operations are synchronized and executed in a deterministic manner.
+
+![Sequential Logic](https://github.com/user-attachments/assets/4ffdcfe5-a341-4845-8279-a15fd21d5dda)
+
+---
+
+## 2. D Flip-Flop
+
+- The **D (Data) Flip-Flop** is the simplest and most commonly used flip-flop.
+- It stores a binary value (0 or 1) based on the clock's rising edge.
+- Once set, it holds that value until the next clock cycle updates it.
+
+---
+
+## 3. Importance of Reset in Sequential Circuits
+
+- **Reset** brings a sequential system to a known starting state.
+- It can be asynchronous or synchronous, depending on the design.
+- Useful in initializing flip-flops or state machines when the system boots or restarts.
+
+---
+
+## 4. Sequential Circuits as State Machines
+
+Sequential circuits can be understood as **finite state machines (FSMs)**:
+- **Combinational logic** determines outputs and next states.
+- **State registers** store current states and update on each clock cycle.
+
+![State Machine](https://github.com/user-attachments/assets/e2052cd6-e69f-47ea-8686-a976286d3e9e)
+
+---
+
+## 5. Fibonacci Series Circuit Example
+
+The Fibonacci series is computed using two prior values. In hardware:
+
+- Two registers store the last two values.
+- On each clock cycle, the circuit computes and stores the new value.
+
+![Fibonacci Circuit](https://github.com/user-attachments/assets/9030c3d2-a2d4-4ef6-844b-a37017ef0f16)
+
+---
+
+## 6. Reset in the Fibonacci Circuit
+
+- The **reset signal** initializes the two registers with the first two Fibonacci values (typically 1 and 1).
+- Once reset is deasserted, the circuit continues the series.
+
+![Fibonacci Reset](https://github.com/user-attachments/assets/7d621313-7942-4815-b73d-0142c5499782)
+
+---
+
+## 7. TL-Verilog Representation of Fibonacci Circuit
+
+In TL-Verilog:
+
+- Use conditional expressions to inject initial values on reset.
+- Use shift (`>>`) operators to refer to past values.
+
+```tlv
+$op = $reset ? 32'b1 : >>1$op + >>2$op;
+```
+
+![3 2](https://github.com/user-attachments/assets/c5316e45-bc12-4fa0-9537-8c9bc9962311)
 
 
+---
+
+# Labs
+
+## 8. Exercise: Free-Running Counter
+
+A free-running counter:
+
+- Starts from zero.
+- Increments by one each clock cycle.
+
+![Free Running Counter](https://github.com/user-attachments/assets/6d025fcd-ae17-482a-a925-73406f09e167)
+![Counter Values](https://github.com/user-attachments/assets/87054e9d-4462-470e-9303-2094ba62bc8f)
+![Counter Waveform](https://github.com/user-attachments/assets/d7569c90-ca84-4ea2-8245-d16cf8705121)
+
+---
+
+## 9. Expressing Values in Verilog
+
+### Verilog Value Notation
+
+Specify bit-width and format explicitly:
+
+- Format: `<width>'<format><value>`
+- Examples:
+  - `8'd15` → 8-bit decimal 15
+  - `4'b1010` → 4-bit binary 1010
+
+![Verilog Value Example](https://github.com/user-attachments/assets/6405d6ee-367d-4897-9d25-12be0554d41f)
+
+### Shortcuts
+
+- `'0` → Verilog infers required bits
+- `'x` → “Don't care” value, useful for debugging unknown states
+
+### Default Width
+
+- Without explicit width, values are assumed 32 bits.
+
+### Simulation vs. Synthesis
+
+- Verilator (used by MakerChip) supports only two states: `0` and `1`.
+- No support for `'x` in simulation — be mindful of missing debug behavior.
+
+---
+
+## 10. Calculator Example Using Flip-Flop (Sequential Circuit)
+
+### Overview
+
+This circuit mimics a calculator that retains its previous result and performs a new operation using that stored value.
+
+![Calculator Circuit](https://github.com/user-attachments/assets/f2cd35c0-9ea5-457b-aaa1-8e1a4042f7cc)
+
+### Functionality
+
+- A flip-flop stores the previous output.
+- The result of a new operation uses this stored value.
+- On **reset**, the stored value is cleared (like hitting "C" on a calculator).
+
+---
+
+### 11. TL-Verilog Lab Solution: Calculator
+
+```tlv
+\m5_TLV_version 1d: tl-x.org
+\m5
+
+// =================================================
+// Welcome!  New to MakerChip? Try the "Learn" menu.
+// =================================================
+
+//use(m5-1.0)   // Uncomment to use M5 macro library.
+\SV
+m5_makerchip_module
+\TLV
+
+$reset = *reset;
+
+// Sequential Calculator
+$in1[31:0] = >>1$op;  // Memory element storing the previous result
+$in2[31:0] = $rand2[3:0];
+$sel[1:0]  = $rand3[1:0];
+
+$sum[31:0]  = $in1 + $in2;
+$diff[31:0] = $in1 - $in2;
+$prod[31:0] = $in1 * $in2;
+$quot[31:0] = $in1 / $in2;
+
+$temp[31:0] = ($sel == 2'b00) ? $sum :
+              ($sel == 2'b01) ? $diff :
+              ($sel == 2'b10) ? $prod : $quot;
+
+$op[31:0] = $reset ? 32'b0 : $temp;
+
+*passed = *cyc_cnt > 40;
+*failed = 1'b0;
+
+\SV
+endmodule
+```
+
+---
+
+## Output
+
+![3 3](https://github.com/user-attachments/assets/f02aacdf-4ea4-4c99-9289-f32a94965ec2)
+
+
+---
+
+Let me know if you'd like to package this into a downloadable `.md` file or embed it into a GitHub repository!
