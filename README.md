@@ -928,7 +928,8 @@ endmodule
   - **Stage 3**: Compute the square root of the sum.
 
 ## 4. **Waveform Viewer in Makerchip**
-![image](https://github.com/user-attachments/assets/9ee50ba5-da48-45a0-bb2c-eae6304d4e08)
+![3 4](https://github.com/user-attachments/assets/2331ac77-9112-4b54-a071-a7eed895bfbe)
+
 
 - Makerchip provides a **waveform viewer** to visualize pipeline behavior over time.
   ![image](https://github.com/user-attachments/assets/10ef5aa4-9d74-4779-aefe-d3694b357fa0)
