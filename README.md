@@ -729,7 +729,6 @@ A free-running counter:
 - Increments by one each clock cycle.
 
 ![Free Running Counter](https://github.com/user-attachments/assets/6d025fcd-ae17-482a-a925-73406f09e167)
-![Counter Values](https://github.com/user-attachments/assets/87054e9d-4462-470e-9303-2094ba62bc8f)
 ![Counter Waveform](https://github.com/user-attachments/assets/d7569c90-ca84-4ea2-8245-d16cf8705121)
 
 ---
@@ -823,7 +822,7 @@ endmodule
 
 ## Output
 
-![3 3](https://github.com/user-attachments/assets/f02aacdf-4ea4-4c99-9289-f32a94965ec2)
+![3 3](https://github.com/user-attachments/assets/da9bdcaf-7f81-4da7-a6f3-026a70e6d94c)
 
 
 ---
@@ -928,11 +927,8 @@ endmodule
   - **Stage 3**: Compute the square root of the sum.
 
 ## 4. **Waveform Viewer in Makerchip**
-![3 4](https://github.com/user-attachments/assets/2331ac77-9112-4b54-a071-a7eed895bfbe)
+![3 3](https://github.com/user-attachments/assets/532b8a16-d6b1-4738-ace7-99dc386c30a5)
 
-
-- Makerchip provides a **waveform viewer** to visualize pipeline behavior over time.
-  ![image](https://github.com/user-attachments/assets/10ef5aa4-9d74-4779-aefe-d3694b357fa0)
 - In a pipeline, **data is distributed across time**, meaning inputs at earlier stages impact outputs at later stages.
 - The **waveform viewer** lets you track how inputs (e.g., `a` and `b`) at different stages of the pipeline correspond to outputs (e.g., `c`) a few clock cycles later.
 
@@ -1158,3 +1154,121 @@ endmodule
 ![image](https://github.com/user-attachments/assets/d76909fb-3a7f-471b-8290-d85e07d4f133)
 ![image](https://github.com/user-attachments/assets/7eb0357c-a8d1-4088-9b06-e12921b7687d)
 ![image](https://github.com/user-attachments/assets/f7920203-dff4-45b4-9e1b-eb356442678a)
+
+
+# Validity in TL-Verilog
+
+## 1. Introduction
+
+**Validity** in TL-Verilog denotes when a signal's value is meaningful within a circuit. Unlike traditional RTL languages, TL-Verilog allows designers to specify the validity of signals, enabling more efficient and accurate hardware designs.
+
+## 2. Calculator Circuit Example
+
+In a calculator circuit, operations may only be meaningful every other cycle. During alternate cycles, although gates are active, their outputs might not be relevant. Incorporating validity ensures that only meaningful operations are considered, enhancing design efficiency.
+
+## 3. Applying Validity to the Pythagorean Theorem Circuit
+
+Consider a circuit computing the Pythagorean theorem: `C = sqrt(A² + B²)`. In broader systems, this computation might not be required every cycle. By introducing a `valid` signal in stage 1 of the pipeline:
+
+- When `valid` is `true`, the computation proceeds.
+- When `valid` is `false`, the computation is skipped, and the signal is treated as invalid or "don't care".
+
+## 4. Benefits of Validity
+
+- **Easier Debugging**: Waveforms highlight only meaningful values, reducing clutter.
+- **Cleaner Design**: Designs become more intuitive and maintainable.
+- **Error Checking**: Invalid signals propagate as 'X' (don't care) in simulations, aiding in early bug detection.
+
+## 5. Don't Care Values and Error Checking
+
+- **Don't Care Values (`X`)**: Represent irrelevant values in simulations. If an invalid signal is used downstream, it propagates as `X`, highlighting potential design issues.
+- **High Impedance Values (`Z`)**: Indicate undriven signals, useful in tri-state bus scenarios.
+
+## 6. Clock Gating for Power Savings
+
+Clock gating disables the clock signal to certain parts of the circuit when they're not in use, conserving power. With validity:
+
+- If a signal is invalid, the clock gate prevents the flip-flop from toggling.
+- If a signal is valid, normal operation resumes.
+
+This technique reduces unnecessary power consumption by ensuring only relevant parts of the circuit are active.
+
+## 7. Advantages of Clock Gating with TL-Verilog
+
+Traditional RTL designs often add clock gating as an afterthought. TL-Verilog integrates validity from the outset, allowing for inherent clock gating and resulting in more power-efficient designs.
+
+## 8. Conclusion
+
+Validity in TL-Verilog enhances signal management, simplifies debugging, and improves power efficiency. By controlling when values are meaningful and integrating clock gating, designers can create more efficient and robust circuits.
+
+---
+
+# Pythagorean Theorem Accumulation in Makerchip
+
+## Development Process
+
+### 1. Initial Setup
+
+- **Pipeline Stages**: A 3-stage pipeline computes the Pythagorean theorem.
+- **Inputs**: 4-bit variables `A` and `B` are randomly generated for clarity in waveforms.
+- **Data Width Management**: Multiplying 4-bit inputs results in 8-bit outputs, automatically zero-extended for alignment.
+
+### 2. File Structure
+
+- Specify TL-Verilog version (`1d`).
+- Include TL-Verilog documentation link (`tlx.org`).
+- Enable M4 macro processing with `m4_tlv_version`.
+- Define module using `m4_makerchip_module`, incorporating inputs like clock and reset, and outputs like `pass` and `fail`.
+
+### 3. Pythagorean Theorem Computation
+
+- Calculate `C = sqrt(A² + B²)`.
+- Waveform simulations display inputs `A`, `B`, and resulting `C`.
+- Simulation runs for 30 cycles, asserting `pass` upon completion.
+
+### 4. Distance Accumulation Circuit
+
+- Extend the circuit to accumulate total distance over multiple computations.
+- **State Retention**: Store total distance as state, updating with each valid computation.
+- **Adder Logic**: Add new distance to total distance during valid cycles.
+- **Reset Logic**: Initialize total distance to zero upon reset.
+
+### 5. Validity Condition
+
+- Use a `valid` signal to control computations.
+- Employ `when` conditions to ensure operations occur only during valid cycles.
+- Platform generates random `valid` signals for simulation purposes.
+
+### 6. Code Structure
+
+- Use `sv` statements to pass SystemVerilog code unchanged.
+- Include predefined square root module via Verilog include statements.
+- Implement main logic within TL-Verilog blocks, compiled into SystemVerilog.
+
+### 7. Waveform Analysis
+
+- Zoom into specific cycles to inspect values of `A`, `B`, and `C`.
+- Confirm computations occur only during valid cycles, with total distance updating accordingly.
+
+---
+
+## Pipeline Stage and Total Distance Computation Breakdown
+
+### 1. Objective
+
+Compute total distance over multiple pipeline stages, ensuring accumulated values persist even during invalid cycles.
+
+### 2. Stage Involvement
+
+- Total distance computation occurs in **Stage 4**, interacting with values from **Stage 5** due to pipelining.
+- Ensure values are retained across cycles for accurate accumulation.
+
+### 3. Width Expansion
+
+- Initially defined as 32-bit (`31:0`), expanded to 64-bit (`63:0`) to prevent overflow during accumulation.
+
+---
+
+# Day 4 
+
+
